@@ -1,0 +1,188 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// 专业
+model Major {
+  id            Int      @id @default(autoincrement())
+  slug          String   @unique
+  code          String // AI / DATA / COMMERCE / FINTECH
+  name          String
+  englishName   String
+  positioning   String // 智能能力 / 数据能力 ...
+  tagline       String // 兴趣描述
+  description   String   @db.Text
+  abilities     String // JSON array
+  coreCourses   String // JSON array
+  careers       String // JSON array
+  honors        String   @db.Text // JSON array 历年荣誉
+  cooperation   String   @db.Text // 校企合作
+  practice      String   @db.Text // 实践教学体系
+  faculty       String   @db.Text // 师资力量
+  research      String   @db.Text // 科研情况
+  // —— 后台可编辑的专业页内容（JSON，空则前台回退到内置数据）——
+  abilityMatrixJson    String? @db.LongText // 能力矩阵图谱（6 层旭日图树）
+  courseSystemJson     String? @db.LongText // 岗课赛证课程体系
+  trainingSystemJson   String? @db.LongText // 人才培养体系图
+  sort          Int      @default(0)
+  createdAt     DateTime @default(now())
+  projects      IndustryProjectMajor[]
+  works         StudentWorkMajor[]
+}
+
+/// 后台管理员
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  displayName  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+/// 真实产业项目
+model IndustryProject {
+  id                 Int      @id @default(autoincrement())
+  slug               String   @unique
+  code               String // PROJECT / 001
+  name               String
+  englishName        String
+  summary            String   @db.Text
+  projectType        String // JSON array: REAL PROJECT / PBL ...
+  studentRoles       String // JSON array 学生任务
+  process            String // JSON array 流程
+  outputs            String // JSON array 产出
+  learningModel      String // JSON array
+  status             String // active / completed
+  partnerPublic      Boolean  @default(false)
+  partnerDisplayName String?
+  cover              String?
+  featured           Boolean  @default(false)
+  sort               Int      @default(0)
+  majors             IndustryProjectMajor[]
+}
+
+model IndustryProjectMajor {
+  projectId Int
+  majorId   Int
+  project   IndustryProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  major     Major           @relation(fields: [majorId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, majorId])
+}
+
+/// 学生作品
+model StudentWork {
+  id            Int      @id @default(autoincrement())
+  slug          String   @unique
+  code          String // WORK / 001
+  title         String
+  summary       String   @db.Text
+  type          String // JSON array: REAL PROJECT / COMPETITION ...
+  tags          String // JSON array 技术标签
+  challenge     String   @db.Text
+  brief         String   @db.Text
+  process       String   @db.Text // JSON array
+  tools         String // JSON array
+  team          String // JSON array [{name, major, role}]
+  mentor        String?
+  course        String?
+  outputs       String   @db.Text // JSON array
+  results       String   @db.Text // JSON array
+  commercialUse Boolean  @default(false)
+  crossMajor    Boolean  @default(false)
+  cover         String?
+  featured      Boolean  @default(false)
+  sort          Int      @default(0)
+  createdAt     DateTime @default(now())
+  majors        StudentWorkMajor[]
+}
+
+model StudentWorkMajor {
+  workId  Int
+  majorId Int
+  work    StudentWork @relation(fields: [workId], references: [id], onDelete: Cascade)
+  major   Major       @relation(fields: [majorId], references: [id], onDelete: Cascade)
+
+  @@id([workId, majorId])
+}
+
+/// 实训空间
+model TrainingSpace {
+  id               Int     @id @default(autoincrement())
+  roomNo           String?
+  name             String
+  spaceType        String
+  area             Int?
+  capacity         Int?
+  majors           String // JSON array
+  projects         String // JSON array
+  courses          String // JSON array
+  description      String  @db.Text
+  equipmentSummary String  @db.Text // JSON array
+  cover            String?
+  posX             Float
+  posY             Float
+  width            Float
+  height           Float
+  sort             Int     @default(0)
+}
+
+/// 学院数据
+model CollegeStat {
+  id          Int     @id @default(autoincrement())
+  value       String
+  suffix      String?
+  label       String
+  englishLabel String?
+  description String?
+  updatedAt   String?
+  sort        Int     @default(0)
+}
+
+/// 新闻
+model News {
+  id         Int      @id @default(autoincrement())
+  slug       String   @unique
+  title      String
+  category   String // 学院动态 / 专业建设 / 产教融合 / 学生成长 / 招生就业
+  summary    String   @db.Text
+  content    String   @db.LongText // JSON blocks [{type:'p'|'h'|'img',...}]
+  cover      String?
+  publishedAt DateTime
+  sourceUrl  String?
+  featured   Boolean  @default(false)
+  views      Int      @default(0)
+  createdAt  DateTime @default(now())
+}
+
+/// 培养链路节点（产教融合）
+model EducationStep {
+  id          Int    @id @default(autoincrement())
+  code        String // 01
+  englishName String
+  name        String
+  description String @db.Text
+  sort        Int    @default(0)
+}
+
+/// 成果展示（竞赛获奖 / 教学成果 / 活动成果）
+model Achievement {
+  id       Int     @id @default(autoincrement())
+  slug     String  @unique
+  code     String // ACHV / 001
+  title    String
+  category String // COMPETITION / TEACHING / ACTIVITY
+  year     String
+  summary  String  @db.Text
+  detail   String  @db.Text
+  results  String  @db.Text // JSON array 成果清单
+  cover    String?
+  featured Boolean @default(false)
+  sort     Int     @default(0)
+}

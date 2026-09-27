@@ -1,0 +1,21 @@
+# 依赖与构建产物
+website/node_modules/
+website/.next/
+website/out/
+website/uploads/
+*.tsbuildinfo
+next-env.d.ts
+
+# 敏感配置（数据库密码等）
+.env
+website/.env
+
+# 临时处理脚本与中间产物
+_tmp/
+
+# 超大素材（超过 GitHub 100MB 单文件限制）
+培养模式&课程体系/最美职教新示范V7.0 - 副本.pptx
+
+# 系统文件
+.DS_Store
+Thumbs.db
