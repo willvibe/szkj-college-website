@@ -54,7 +54,7 @@ export default function Footer() {
 
         {/* Sub Bottom Line */}
         <div className="flex flex-col items-center justify-between gap-4 border-t border-slate-800 pt-8 font-mono text-[11px] text-slate-500 sm:flex-row">
-          <div>Copyright © 2026 济南幼儿师范高等专科学校 数智科技产业学院. All rights reserved.</div>
+          <div>Copyright © {new Date().getFullYear()} 济南幼儿师范高等专科学校 数智科技产业学院. All rights reserved.</div>
           <div className="flex items-center gap-4">
             <span>鲁ICP备05002934号</span>
             <span>公安网安备案保护中</span>

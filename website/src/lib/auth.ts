@@ -13,12 +13,27 @@ export function verifyPassword(password: string, stored: string): boolean {
   const [salt, hash] = stored.split(":");
   if (!salt || !hash) return false;
   const test = crypto.scryptSync(password, salt, 32).toString("hex");
-  return crypto.timingSafeEqual(Buffer.from(hash, "hex"), Buffer.from(test, "hex"));
+  const a = Buffer.from(hash, "hex");
+  const b = Buffer.from(test, "hex");
+  // 长度先比较：库中哈希损坏时 timingSafeEqual 会 throw，而非返回 false
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+/** 用户不存在时执行一次等价 scrypt，抹平时序差防用户名枚举 */
+export function dummyVerify() {
+  crypto.scryptSync("dummy-password", "00000000000000000000000000000000", 32);
 }
 
 // ===== Token（payload.signature，HMAC-SHA256）=====
 function hmac(payload: string): string {
   return crypto.createHmac("sha256", ADMIN_SECRET).update(payload).digest("base64url");
+}
+
+/** 常量时间比较两个 base64url 签名 */
+function safeEqualHex(a: string, b: string): boolean {
+  const ba = Buffer.from(a);
+  const bb = Buffer.from(b);
+  return ba.length === bb.length && crypto.timingSafeEqual(ba, bb);
 }
 
 export function signToken(username: string): string {
@@ -32,7 +47,7 @@ export function verifyToken(token: string | undefined | null): string | null {
   if (!token) return null;
   const [payload, sig] = token.split(".");
   if (!payload || !sig) return null;
-  if (hmac(payload) !== sig) return null;
+  if (!safeEqualHex(hmac(payload), sig)) return null;
   try {
     const data = JSON.parse(Buffer.from(payload, "base64url").toString()) as { u: string; exp: number };
     if (Date.now() > data.exp) return null;

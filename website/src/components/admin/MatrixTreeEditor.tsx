@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { saveMajorContent } from "@/app/admin/actions";
 import { MATRIX_RING_COLORS, type MatrixNode } from "@/lib/abilityMatrix";
 import AbilityMatrixSunburst from "@/components/AbilityMatrixSunburst";
+import MatrixExcelTools from "./MatrixExcelTools";
 
 const LEVEL_NAMES = ["岗位群", "核心岗位", "主要职责", "典型任务", "核心技能", "职业素养"];
 const input = "w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-blue-400";
@@ -199,8 +200,15 @@ export default function MatrixTreeEditor({
       {state?.error && <p className="mb-3 rounded-lg bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-600">{state.error}</p>}
 
       {tab === "edit" ? (
-        <div className="max-h-[640px] space-y-2 overflow-y-auto rounded-xl border border-slate-100 bg-slate-50/50 p-3">
-          <NodeCard node={tree} depth={0} path="r" onChange={setTree} />
+        <div>
+          <MatrixExcelTools
+            onImport={(tree) => {
+              setTree(tree);
+            }}
+          />
+          <div className="max-h-[640px] space-y-2 overflow-y-auto rounded-xl border border-slate-100 bg-slate-50/50 p-3">
+            <NodeCard node={tree} depth={0} path="r" onChange={setTree} />
+          </div>
         </div>
       ) : (
         <div className="rounded-xl border border-slate-100 bg-slate-50/60 p-2">

@@ -15,7 +15,9 @@ const CATEGORIES = ["学院动态", "专业建设", "产教融合", "学生成�
 export default async function AdminNewsEditPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const isNew = id === "new";
-  const n = isNew ? null : await prisma.news.findUnique({ where: { id: Number(id) } });
+  const nid = Number(id);
+  // 非法 id（非 new、非正整数）直接 404，避免 Prisma 校验异常导致 500
+  const n = isNew ? null : Number.isInteger(nid) && nid > 0 ? await prisma.news.findUnique({ where: { id: nid } }) : null;
   if (!isNew && !n) notFound();
 
   return (
@@ -81,6 +83,7 @@ export default async function AdminNewsEditPage({ params }: { params: Promise<{ 
             </p>
           </div>
           <RichTextEditor
+            key={n ? n.id : "new"}
             name="content"
             initialHtml={n ? (isHtmlContent(n.content) ? n.content : blocksToHtml(n.content)) : ""}
             placeholder="在此输入正文，或从微信公众号直接粘贴…"

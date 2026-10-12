@@ -3,10 +3,7 @@ import { notFound } from "next/navigation";
 import { getWorks } from "@/lib/queries";
 import Reveal from "@/components/Reveal";
 
-export async function generateStaticParams() {
-  const works = await getWorks();
-  return works.map((w) => ({ slug: w.slug }));
-}
+export const dynamic = "force-dynamic"; // 后台管理保存后前台即时生效（不依赖构建期数据库）
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -64,7 +61,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
       </div>,
     ],
     [
-      "08",
+      "07",
       "OUTPUT / 成果",
       <ul key="ou" className="space-y-1 text-sm text-ink/70">
         {w.outputs.map((o) => (
@@ -73,7 +70,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
       </ul>,
     ],
     [
-      "09",
+      "08",
       "RESULT / 结果",
       <ul key="r" className="space-y-1 text-sm text-ink/70">
         {w.results.map((r) => (

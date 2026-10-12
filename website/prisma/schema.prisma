@@ -161,6 +161,30 @@ model News {
   createdAt  DateTime @default(now())
 }
 
+/// 首页 hero 轮播海报（后台可管理）
+model CarouselItem {
+  id        Int      @id @default(autoincrement())
+  title     String
+  subtitle  String?  @db.Text
+  badge     String? // 左上角小标签（如 人工智能 / 实训基地）
+  image     String // 海报图 URL
+  link      String? // 点击跳转链接
+  btnText   String? // 按钮文字（默认"了解更多"）
+  active    Boolean  @default(true)
+  sort      Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+/// 招生咨询线索（前台浮动咨询表单提交）
+model ConsultLead {
+  id        Int      @id @default(autoincrement())
+  name      String
+  contact   String // 电话 / 微信
+  major     String // 意向专业
+  handled   Boolean  @default(false) // 后台标记已跟进
+  createdAt DateTime @default(now())
+}
+
 /// 培养链路节点（产教融合）
 model EducationStep {
   id          Int    @id @default(autoincrement())

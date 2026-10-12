@@ -5,12 +5,12 @@ import BaseSection from "@/components/BaseSection";
 import ShowcaseSection from "@/components/ShowcaseSection";
 import AdmissionSection from "@/components/AdmissionSection";
 import NewsSection from "@/components/NewsSection";
-import { getAchievements, getMajors, getNewsList, getProjects, getSpaces, getStats, getSteps, getWorks } from "@/lib/queries";
+import { getAchievements, getCarouselItems, getMajors, getNewsList, getProjects, getSpaces, getStats, getSteps, getWorks } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [majors, projects, works, spaces, stats, steps, news, achievements] = await Promise.all([
+  const [majors, projects, works, spaces, stats, steps, news, achievements, carousel] = await Promise.all([
     getMajors(),
     getProjects(),
     getWorks(),
@@ -19,11 +19,12 @@ export default async function HomePage() {
     getSteps(),
     getNewsList(),
     getAchievements(),
+    getCarouselItems(),
   ]);
 
   return (
     <>
-      <HeroScene />
+      <HeroScene carousel={carousel} />
       <StatsScene stats={stats} />
       <MajorsSection majors={majors} projects={projects} />
       <IndustrySection steps={steps} projects={projects} />

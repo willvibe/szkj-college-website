@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { MATRIX_RING_COLORS, type MatrixNode } from "@/lib/abilityMatrix";
 
 // ===== 几何常量（120° 扇形，顶点在左下，开口向上偏右，与示意图一致）=====
-const W = 920;
+const W = 700; // 画布宽 = 左侧标注 8~126 + 扇形最右 680 + 右边距，收紧避免整体偏左
 const H = 780;
 const CX = 180; // 顶点（圆心）
 const CY = 515;

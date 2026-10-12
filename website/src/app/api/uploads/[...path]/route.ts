@@ -55,6 +55,11 @@ export async function GET(_req: Request, ctx: { params: Promise<{ path: string[]
         "Content-Type": type,
         "Content-Length": String(st.size),
         "Cache-Control": "public, max-age=31536000, immutable",
+        "X-Content-Type-Options": "nosniff",
+        // SVG 是可执行活动文档：同源直接打开会在站点源执行脚本，强制沙箱化
+        ...(ext === "svg"
+          ? { "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox" }
+          : {}),
         // 附件类文件点击下载；图片/视频内联展示
         ...(!type.startsWith("image/") && !type.startsWith("video/") && !type.startsWith("audio/")
           ? { "Content-Disposition": `attachment; filename="file.${ext}"` }

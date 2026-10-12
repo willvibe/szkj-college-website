@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"; // 后台管理保存后前台即时生效
+
 import PageHero from "@/components/PageHero";
 import AchievementBoard from "@/components/AchievementBoard";
 import WorksLibrary from "@/components/WorksLibrary";

@@ -1,25 +1,24 @@
 import Link from "next/link";
-import HeroNetwork from "./HeroNetwork";
+import HeroCarousel from "./HeroCarousel";
 import Reveal from "./Reveal";
 import CountUp from "./CountUp";
-import type { Stat } from "@/lib/types";
+import type { CarouselRow, Stat } from "@/lib/types";
 
-export function HeroScene() {
+export function HeroScene({ carousel }: { carousel: CarouselRow[] }) {
   return (
     <section id="hero" className="relative flex min-h-[92vh] items-center overflow-hidden bg-[#0A1120] pt-24 pb-16 text-white">
-      <div className="grid-pattern absolute inset-0 opacity-40" aria-hidden />
-      <div className="pointer-events-none absolute -top-40 -left-40 h-96 w-96 rounded-full bg-blue-600/20 blur-[128px]" aria-hidden />
-      <div className="pointer-events-none absolute top-1/2 -right-40 h-96 w-96 rounded-full bg-cyan-500/15 blur-[128px]" aria-hidden />
+      {/* 全宽海报轮播背景（充满整个 hero，渐变遮罩内置于组件） */}
+      <HeroCarousel items={carousel} />
 
       <div className="shell relative z-10 grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
         {/* 左侧叙事 */}
         <div className="flex flex-col items-start lg:col-span-6">
           <Reveal>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-mono text-xs tracking-wider text-cyan-400">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 font-mono text-xs tracking-wider text-cyan-400 backdrop-blur-md">
               <span className="h-2 w-2 rounded-full bg-cyan-400 animate-ping-slow" aria-hidden />
               JINAN PRESCHOOL EDUCATION COLLEGE
             </div>
-            <h1 className="mb-4 whitespace-nowrap text-2xl font-extrabold leading-[1.15] tracking-tight text-white sm:text-4xl lg:text-5xl xl:text-6xl">
+            <h1 className="mb-4 whitespace-nowrap text-2xl font-extrabold leading-[1.15] tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.6)] sm:text-4xl lg:text-5xl xl:text-6xl">
               数智科技
               <span className="bg-gradient-to-r from-blue-400 via-cyan-300 to-teal-300 bg-clip-text text-transparent">
                 产业学院
@@ -57,23 +56,8 @@ export function HeroScene() {
           </Reveal>
         </div>
 
-        {/* 右侧 3D 面板 */}
-        <div className="relative flex items-center justify-center lg:col-span-6">
-          <Reveal delay={200} className="w-full">
-            <div className="glass-panel relative flex h-[420px] w-full items-center justify-center overflow-hidden rounded-3xl border border-white/10 shadow-2xl sm:h-[500px]">
-              <HeroNetwork />
-              <div className="pointer-events-none absolute inset-x-4 bottom-4 flex items-center justify-between">
-                <div className="flex items-center gap-3 rounded-full border border-white/10 bg-slate-900/80 px-3 py-1.5 backdrop-blur-md">
-                  <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" aria-hidden />
-                  <span className="font-mono text-[11px] text-slate-300">DIGITAL INDUSTRY NETWORK · 3D拓扑图谱</span>
-                </div>
-                <div className="hidden rounded border border-white/10 bg-slate-900/80 px-2 py-1 font-mono text-[10px] text-slate-400 sm:block">
-                  可轻微拖拽探索
-                </div>
-              </div>
-            </div>
-          </Reveal>
-        </div>
+        {/* 右侧留给海报画面（渐变层已保证左侧可读，无需内容占位） */}
+        <div className="hidden lg:col-span-6 lg:block" aria-hidden />
       </div>
     </section>
   );
@@ -83,7 +67,7 @@ export function StatsScene({ stats, entry = true }: { stats: Stat[]; entry?: boo
   const big = stats.find((s) => s.label.includes("实训基地"));
   const rest = stats.filter((s) => s !== big);
   const colors = ["text-blue-600", "text-indigo-600", "text-slate-900", "text-emerald-600", "text-amber-500"];
-  const extra = ["省级教学名师、技术能手领衔", "一线工程师全流程带教", "AI、大数据、电商、金融科技", "位居省内同类高职院校前列", "全国商业精英赛、省技能大赛"];
+  // 说明文案统一走数据库 description（后台可编辑），不再按数组位置硬编码，避免后台增删/排序后文案错位
 
   return (
     <section id="about" className="relative border-b border-slate-200 bg-white py-20">
@@ -157,7 +141,7 @@ export function StatsScene({ stats, entry = true }: { stats: Stat[]; entry?: boo
                     <span className="text-lg">{s.suffix}</span>
                   </div>
                   <div className="text-xs font-bold text-slate-800">{s.label}</div>
-                  <div className="mt-1 text-[11px] text-slate-500">{extra[i] ?? s.description}</div>
+                  <div className="mt-1 text-[11px] text-slate-500">{s.description ?? "\u00A0"}</div>
                 </div>
               </Reveal>
             ))}

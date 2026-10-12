@@ -19,7 +19,13 @@ async function verifyToken(token: string | undefined): Promise<boolean> {
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/, "");
-  if (expect !== sig) return false;
+  // 常量时间比较（Edge 环境无 node:crypto timingSafeEqual）
+  const a = new TextEncoder().encode(expect);
+  const b = new TextEncoder().encode(sig);
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
+  if (diff !== 0) return false;
   try {
     const data = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
     return Date.now() <= data.exp;

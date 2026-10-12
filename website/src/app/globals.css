@@ -63,6 +63,20 @@
       linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
   }
+  /* 深色内页 Hero 网格背景（PageHero 用） */
+  .grid-bg-dark {
+    background-size: 40px 40px;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px),
+      radial-gradient(ellipse at 85% 15%, rgba(56,189,248,0.14), transparent 55%);
+  }
+  /* 深底空心描边字（PageHero 大号背景编号） */
+  .text-stroke-dark {
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(255,255,255,0.22);
+    text-stroke: 1.5px rgba(255,255,255,0.22);
+  }
 
   /* ---- labels & tags ---- */
   .mono-label {
@@ -76,6 +90,10 @@
   }
   .tag-light {
     @apply border-slate-200 bg-slate-100 text-slate-700;
+  }
+  /* 强调徽章（作品详情页 CROSS-MAJOR / COMMERCIAL USE 等） */
+  .tag-accent {
+    @apply border-cyan-300/40 bg-cyan-400/15 text-cyan-200;
   }
 
   /* ---- buttons ---- */
@@ -195,6 +213,22 @@
 }
 .animate-ping-slow {
   animation: ping-slow 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ---- hero 海报轮播 ---- */
+@keyframes carousel-progress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+.carousel-progress {
+  animation: carousel-progress 5.6s linear forwards;
+}
+@keyframes carousel-zoom {
+  from { transform: scale(1.02); }
+  to { transform: scale(1.1); }
+}
+.carousel-zoom {
+  animation: carousel-zoom 6.4s ease-out forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {

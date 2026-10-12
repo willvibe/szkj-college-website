@@ -6,8 +6,11 @@ import { usePathname } from "next/navigation";
 const NAV = [
   { href: "/admin", label: "仪表盘", icon: "▦" },
   { href: "/admin/stats", label: "首页核心数据", icon: "◈" },
+  { href: "/admin/carousels", label: "首页轮播海报", icon: "◧" },
   { href: "/admin/majors", label: "专业内容管理", icon: "◎" },
   { href: "/admin/news", label: "学院动态新闻", icon: "▤" },
+  { href: "/admin/consults", label: "招生咨询线索", icon: "✆" },
+  { href: "/admin/settings", label: "账号安全", icon: "⚿" },
 ];
 
 export default function AdminNav() {

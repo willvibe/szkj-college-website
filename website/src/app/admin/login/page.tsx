@@ -84,7 +84,7 @@ export default function AdminLoginPage() {
             {loading ? "登录中…" : "登 录"}
           </button>
           <p className="mt-4 text-center text-[11px] leading-5 text-slate-500">
-            首次使用：admin / admin123（登录后自动创建）
+            账号由系统管理员分配；连续失败 5 次将锁定 10 分钟
           </p>
         </form>
       </div>

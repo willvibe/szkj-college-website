@@ -125,14 +125,14 @@ export default async function AdminMajorEditPage({ params }: { params: Promise<{
       </section>
 
       {/* 能力矩阵图谱：树形编辑 + 预览（所有专业可编辑） */}
-      <MatrixTreeEditor id={m.id} slug={m.slug} initial={matrix} />
+      <MatrixTreeEditor key={`mx-${m.id}`} id={m.id} slug={m.slug} initial={matrix} />
 
       {/* 岗课赛证课程体系：卡片编辑 + 预览 */}
-      {courseSystem && <CourseSystemEditor id={m.id} slug={m.slug} initial={courseSystem} />}
+      {courseSystem && <CourseSystemEditor key={`cs-${m.id}`} id={m.id} slug={m.slug} initial={courseSystem} />}
 
       {/* 人才培养体系图：分块编辑 + 预览 */}
       {trainingSystem ? (
-        <TrainingSystemEditor id={m.id} slug={m.slug} initial={trainingSystem} />
+        <TrainingSystemEditor key={`ts-${m.id}`} id={m.id} slug={m.slug} initial={trainingSystem} />
       ) : (
         <div className="rounded-2xl border border-dashed border-slate-300 bg-white/60 p-6 text-center text-xs text-slate-400">
           本专业暂无人才培养体系图数据

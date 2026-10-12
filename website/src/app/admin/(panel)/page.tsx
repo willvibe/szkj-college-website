@@ -5,20 +5,19 @@ import { getAdminUser } from "@/lib/auth";
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const [user, majors, news, stats, works, achievements] = await Promise.all([
+  const [user, majors, news, stats, carousels] = await Promise.all([
     getAdminUser(),
     prisma.major.findMany({ orderBy: { sort: "asc" } }),
     prisma.news.count(),
     prisma.collegeStat.count(),
-    prisma.studentWork.count(),
-    prisma.achievement.count(),
+    prisma.carouselItem.count({ where: { active: true } }),
   ]);
 
   const cards = [
+    { label: "首页轮播海报", count: carousels, href: "/admin/carousels", desc: "hero 海报轮播图与跳转链接" },
     { label: "专业", count: majors.length, href: "/admin/majors", desc: "矩阵图谱 / 课程体系 / 基本信息" },
     { label: "新闻动态", count: news, href: "/admin/news", desc: "学院动态稿发布与管理" },
     { label: "首页核心数据", count: stats, href: "/admin/stats", desc: "首页数字指标展示" },
-    { label: "成果展示", count: achievements, href: "/admin", desc: "竞赛/教学/活动成果（随前台展示）" },
   ];
 
   return (

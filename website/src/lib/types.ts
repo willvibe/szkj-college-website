@@ -1,3 +1,13 @@
+export type CarouselRow = {
+  id: number;
+  title: string;
+  subtitle: string | null;
+  badge: string | null;
+  image: string;
+  link: string | null;
+  btnText: string | null;
+};
+
 export type MajorRow = {
   id: number;
   slug: string;

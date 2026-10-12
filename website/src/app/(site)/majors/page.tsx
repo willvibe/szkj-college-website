@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"; // 后台管理保存后前台即时生效
+
 import PageHero from "@/components/PageHero";
 import MajorsSection from "@/components/MajorsSection";
 import { getMajors, getProjects } from "@/lib/queries";

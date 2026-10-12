@@ -51,13 +51,42 @@ export async function POST(req: Request) {
 }
 
 // GET ?url= —— 外链图片代理转存（微信公众号图片有防盗链，转存到本地才能稳定显示）
+// 仅放行白名单域名，防 SSRF（内网探测/云元数据）；下载前预检大小，防超大文件打爆内存
+const PROXY_HOST_ALLOWLIST = [
+  ".qpic.cn", // 微信公众号图片（mmb.qpic.cn 等）
+  ".qq.com", // 公众号文章内嵌资源
+  ".jnpec.edu.cn", // 学院官网图片
+  ".weixin.qq.com",
+];
+const PROXY_MAX_BYTES = 20 * 1024 * 1024; // 20MB
+
+function hostAllowed(host: string) {
+  const h = host.toLowerCase();
+  return PROXY_HOST_ALLOWLIST.some((d) => h === d.slice(1) || h.endsWith(d));
+}
+
 export async function GET(req: Request) {
   if (!(await getAdminUser())) {
     return NextResponse.json({ error: "未授权" }, { status: 401 });
   }
-  const target = new URL(req.url).searchParams.get("url");
-  if (!target || !/^https?:\/\//i.test(target)) {
+  const raw = new URL(req.url).searchParams.get("url");
+  if (!raw || !/^https?:\/\//i.test(raw)) {
     return NextResponse.json({ error: "非法地址" }, { status: 400 });
+  }
+  let target: URL;
+  try {
+    target = new URL(raw);
+  } catch {
+    return NextResponse.json({ error: "非法地址" }, { status: 400 });
+  }
+  if (target.protocol !== "https:" && target.protocol !== "http:") {
+    return NextResponse.json({ error: "仅支持 http/https" }, { status: 400 });
+  }
+  if (!hostAllowed(target.hostname)) {
+    return NextResponse.json(
+      { error: `仅支持转存白名单域名图片（微信公众号 qpic.cn / 学院官网 jnpec.edu.cn），当前：${target.hostname}` },
+      { status: 400 }
+    );
   }
   try {
     const res = await fetch(target, {
@@ -67,10 +96,18 @@ export async function GET(req: Request) {
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
         Referer: "https://mp.weixin.qq.com/",
       },
+      redirect: "manual", // 不跟随重定向（重定向可跳内网）
       signal: AbortSignal.timeout(15000),
     });
+    if (res.status >= 300 && res.status < 400) {
+      return NextResponse.json({ error: "目标地址发生重定向，请使用最终图片地址" }, { status: 400 });
+    }
     if (!res.ok) {
       return NextResponse.json({ error: `下载失败 HTTP ${res.status}` }, { status: 502 });
+    }
+    const declared = Number(res.headers.get("content-length") ?? 0);
+    if (declared > PROXY_MAX_BYTES) {
+      return NextResponse.json({ error: "图片超过大小限制" }, { status: 413 });
     }
     const type = (res.headers.get("content-type") ?? "").split(";")[0].trim();
     const typeExt: Record<string, string> = {
@@ -78,15 +115,14 @@ export async function GET(req: Request) {
       "image/png": "png",
       "image/gif": "gif",
       "image/webp": "webp",
-      "image/svg+xml": "svg",
       "image/bmp": "bmp",
     };
-    const ext = typeExt[type] ?? extOf(new URL(target).pathname);
-    if (!IMAGE_EXT.has(ext)) {
-      return NextResponse.json({ error: "目标不是图片" }, { status: 415 });
+    const ext = typeExt[type]; // 代理转存仅接受位图，svg 等活动文档一律拒绝
+    if (!ext) {
+      return NextResponse.json({ error: "目标不是支持的位图图片（jpg/png/gif/webp/bmp）" }, { status: 415 });
     }
     const buf = Buffer.from(await res.arrayBuffer());
-    if (buf.length > MAX_SIZE) {
+    if (buf.length > PROXY_MAX_BYTES) {
       return NextResponse.json({ error: "图片超过大小限制" }, { status: 413 });
     }
     const url = await save(buf, ext);

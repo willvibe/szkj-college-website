@@ -60,10 +60,10 @@ export default function AbilityMatrixSunburst({ data = DATA_MATRIX }: { data?: M
   // 核心岗位节点
   const jobs = data.children ?? [];
 
-  // ?job=N 深链：直接进入第 N 个岗位的扇形展开图
+  // ?job=N 深链：直接进入第 N 个岗位的扇形展开图（空串不当作 0）
   useEffect(() => {
     const q = new URLSearchParams(window.location.search).get("job");
-    const idx = q === null ? NaN : Number(q);
+    const idx = q === null || q === "" ? NaN : Number(q);
     if (Number.isInteger(idx) && idx >= 0 && idx < jobs.length) setMode({ type: "job", idx });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

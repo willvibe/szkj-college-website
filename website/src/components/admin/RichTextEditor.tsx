@@ -84,7 +84,10 @@ export default function RichTextEditor({ name, initialHtml, placeholder }: Props
     if (!files?.length) return;
     for (const f of Array.from(files)) {
       const up = await uploadFile(f);
-      if (up) exec("insertHTML", `<img src="${up.url}" alt="${up.name}" style="max-width:100%;border-radius:8px;" />`);
+      if (up) {
+        const alt = up.name.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
+        exec("insertHTML", `<img src="${up.url}" alt="${alt}" style="max-width:100%;border-radius:8px;" />`);
+      }
     }
     setStatus("图片已插入");
     if (imgInputRef.current) imgInputRef.current.value = "";
@@ -97,9 +100,10 @@ export default function RichTextEditor({ name, initialHtml, placeholder }: Props
       const up = await uploadFile(f);
       if (up) {
         const ext = up.name.split(".").pop()?.toUpperCase() ?? "FILE";
+        const safeName = up.name.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
         exec(
           "insertHTML",
-          `<p><a class="rich-attach" href="${up.url}" download="${up.name}">📎 <strong>[${ext}]</strong> ${up.name}（点击下载）</a></p>`
+          `<p><a class="rich-attach" href="${up.url}" download="${safeName}">📎 <strong>[${ext}]</strong> ${safeName}（点击下载）</a></p>`
         );
       }
     }

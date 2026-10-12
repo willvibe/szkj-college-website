@@ -27,8 +27,8 @@ export default async function AdminStatsPage() {
           >
             <input type="hidden" name="id" value={st.id} />
             <label className="md:col-span-2">
-              <span className="text-[11px] font-semibold text-slate-500">数值</span>
-              <input name="value" defaultValue={st.value} className={input} required />
+              <span className="text-[11px] font-semibold text-slate-500">数值（须以数字开头）</span>
+              <input name="value" defaultValue={st.value} className={input} required pattern="^[\d.].*" title="数值必须以数字开头，如 3000 或 98.5%" />
             </label>
             <label className="md:col-span-1">
               <span className="text-[11px] font-semibold text-slate-500">后缀</span>
@@ -55,6 +55,14 @@ export default async function AdminStatsPage() {
                 保存
               </button>
             </div>
+            <div className="col-span-2 md:col-span-12">
+              <button
+                formAction={deleteStat}
+                className="text-[11px] text-slate-400 underline hover:text-rose-500"
+              >
+                删除该指标（ID {st.id}）
+              </button>
+            </div>
           </form>
         ))}
       </div>
@@ -65,7 +73,7 @@ export default async function AdminStatsPage() {
         <form action={addStat} className="mt-3 grid grid-cols-2 items-end gap-3 md:grid-cols-12">
           <label className="md:col-span-2">
             <span className="text-[11px] font-semibold text-slate-500">数值 *</span>
-            <input name="value" className={input} required placeholder="300" />
+            <input name="value" className={input} required pattern="^[\d.].*" title="数值必须以数字开头，如 3000 或 98.5%" placeholder="300" />
           </label>
           <label className="md:col-span-1">
             <span className="text-[11px] font-semibold text-slate-500">后缀</span>
@@ -96,14 +104,8 @@ export default async function AdminStatsPage() {
       </div>
 
       <p className="mt-4 text-[11px] text-slate-400">
-        提示：删除指标请在下方输入指标 ID 提交（或联系技术支持处理）。
+        提示：数值用于首页/概况页大数字展示，必须以数字开头；删除请点击对应指标行内的"删除该指标"。
       </p>
-      <form action={deleteStat} className="mt-2 flex items-center gap-2">
-        <input name="id" type="number" placeholder="指标 ID" className="w-32 rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm" required />
-        <button className="rounded-lg border border-rose-300 px-3 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-50">
-          删除该指标
-        </button>
-      </form>
     </div>
   );
 }

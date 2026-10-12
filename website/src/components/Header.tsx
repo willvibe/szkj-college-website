@@ -102,6 +102,18 @@ export default function Header() {
       {open && (
         <div className="mx-auto mt-3 max-w-7xl lg:hidden">
           <div className="glass-panel rounded-2xl border border-white/10 p-5 shadow-2xl">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-white/40">MENU / 导航</span>
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="关闭菜单"
+                className="rounded-lg border border-white/10 p-1.5 text-slate-300 hover:text-white"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
             <div className="flex flex-col gap-2">
               {NAV.map((n, i) => (
                 <Link
