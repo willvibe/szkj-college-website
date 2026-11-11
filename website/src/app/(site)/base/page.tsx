@@ -17,7 +17,7 @@ export default async function BasePage() {
         title="生产型实训基地"
         desc="让课程、项目和产业实践发生在同一个空间。这是学院真实项目、教学、训练和学生协作发生的物理空间。"
       />
-      <BaseDigitalTwinSection spaces={spaces} />
+      <BaseDigitalTwinSection />
       <BaseSection spaces={spaces} entry={false} />
     </>
   );
