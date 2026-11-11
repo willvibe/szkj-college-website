@@ -73,11 +73,15 @@ export async function POST(req: Request) {
   }
 
   clearFails(key);
+  // 仅在请求实际为 HTTPS 时设置 Secure，否则 HTTP 访问下浏览器会拒绝保存 cookie 导致无法登录
+  const proto =
+    req.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() ||
+    new URL(req.url).protocol.replace(":", "");
   const res = NextResponse.json({ ok: true });
   res.cookies.set(ADMIN_COOKIE, signToken(user.username), {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: proto === "https",
     path: "/",
     maxAge: ADMIN_TOKEN_TTL,
   });
